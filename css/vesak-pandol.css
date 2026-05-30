@@ -1468,7 +1468,7 @@ select {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 6;
+  z-index: 20;
   overflow: visible;
   height: clamp(9.5rem, 14vw, 12.8rem);
   margin: 0 -2.4rem -1.4rem;
@@ -1639,6 +1639,14 @@ select {
 
 .donation-message span {
   color: var(--gold);
+}
+
+.donation-note {
+  margin: 0.85rem auto 0;
+  color: var(--muted);
+  font-family: var(--font-sinhala);
+  font-size: 0.92rem;
+  line-height: 1.55;
 }
 
 .reflection {
@@ -2153,10 +2161,11 @@ select {
 
   .pandol-base {
     position: absolute;
-    z-index: 6;
+    z-index: 20;
   }
 
   .pandol-foreground-image {
+    z-index: 21;
     width: 100%;
     opacity: 1;
   }
@@ -2343,10 +2352,11 @@ select {
 
   .pandol-base {
     position: absolute;
-    z-index: 6;
+    z-index: 20;
   }
 
   .pandol-foreground-image {
+    z-index: 21;
     width: 100%;
     opacity: 1;
   }
