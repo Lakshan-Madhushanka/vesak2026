@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A peaceful digital Vesak pandol honouring the Birth, Enlightenment, and Parinibbana of the Buddha."
+    />
+    <title>Digital Vesak Pandol | සම්බුදු තෙමඟුල</title>
+    <link rel="stylesheet" href="css/vesak-pandol.css" />
+  </head>
+  <body class="pattern-flow">
+    <main class="vesak-page" id="top">
+      <section class="vesak-sky" aria-label="Night-time Vesak pandol environment">
+        <div class="moon" aria-hidden="true"></div>
+        <div class="stars" data-star-field aria-hidden="true"></div>
+        <div class="lantern-field" data-lantern-field aria-hidden="true"></div>
+
+        <div class="page-intro">
+          <p class="intro-kicker">Digital Vesak Pandol</p>
+          <h1>සම්බුදු තෙමඟුල</h1>
+          <button class="control-button song-button intro-song-button" type="button" data-song-toggle aria-pressed="false">
+            <span lang="si">බොදු බැති ගී සවන් දෙන්න</span>
+            <span class="button-translation">Listen to Buddhist devotional songs</span>
+          </button>
+          <button class="control-button song-button intro-song-button" type="button" data-donation-open>
+            <span lang="si">පින්වත් අය ආධාර ලබා දෙන්න</span>
+            <span class="button-translation">Offer a donation</span>
+          </button>
+        </div>
+
+        <article class="pandol" aria-labelledby="pandol-title">
+          <span class="pandol-pillar pillar-left" aria-hidden="true"></span>
+          <span class="pandol-pillar pillar-right" aria-hidden="true"></span>
+          <div class="thorana-decor" aria-hidden="true">
+            <div class="thorana-bulbs" data-thorana-bulbs aria-hidden="true"></div>
+            <div class="pandol-frame-wrapper">
+              <img
+                src="assets/vesak/generated-thorana-frame-transparent.png"
+                alt="Decorative Vesak thorana frame"
+                class="pandol-frame-img thorana-frame-image"
+              />
+              <canvas class="pandol-light-canvas" aria-hidden="true"></canvas>
+            </div>
+          </div>
+
+          <header class="pandol-header">
+            <div class="header-glow" aria-hidden="true"></div>
+            <p class="header-label">Vesak Full Moon</p>
+            <h2 id="pandol-title">සම්බුදු තෙමඟුල</h2>
+            <div class="flag-ribbon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p class="header-subtitle">The Three Sacred Events of Vesak</p>
+            <p class="header-events">Birth <span aria-hidden="true">•</span> Enlightenment <span aria-hidden="true">•</span> Parinibbāna</p>
+          </header>
+
+          <section class="story-panels" aria-label="Three sacred events commemorated during Vesak">
+            <article class="story-panel story-birth" data-panel>
+              <figure class="story-art">
+                <span class="art-aura birth-aura" aria-hidden="true"></span>
+                <img
+                  class="story-image"
+                  src="assets/vesak/birth.jpg"
+                  alt="Artistic Vesak scene representing the birth of Prince Siddhartha at Lumbini"
+                />
+              </figure>
+            </article>
+
+            <article class="story-panel story-enlightenment featured-panel" data-panel>
+              <span class="enlightenment-light-set" aria-hidden="true">
+                <span class="enlightenment-light-layer light-layer-one"></span>
+                <span class="enlightenment-light-layer light-layer-two"></span>
+                <span class="enlightenment-light-layer light-layer-three"></span>
+                <span class="enlightenment-light-layer light-layer-four"></span>
+              </span>
+              <figure class="story-art">
+                <span class="art-aura enlightenment-aura" aria-hidden="true"></span>
+                <span class="aura-ray ray-a" aria-hidden="true"></span>
+                <span class="aura-ray ray-b" aria-hidden="true"></span>
+                <span class="aura-ray ray-c" aria-hidden="true"></span>
+                <span class="aura-bodhi-leaf aura-leaf-one" aria-hidden="true"></span>
+                <span class="aura-bodhi-leaf aura-leaf-two" aria-hidden="true"></span>
+                <span class="aura-bodhi-leaf aura-leaf-three" aria-hidden="true"></span>
+                <img
+                  class="story-image"
+                  src="assets/vesak/enlightenment.jpg"
+                  alt="Artistic Vesak scene of the Buddha's enlightenment beneath the Bodhi Tree"
+                />
+              </figure>
+            </article>
+
+            <article class="story-panel story-parinibbana" data-panel>
+              <figure class="story-art">
+                <span class="art-aura parinibbana-aura" aria-hidden="true"></span>
+                <img
+                  class="story-image"
+                  src="assets/vesak/parinibbana.jpg"
+                  alt="Artistic Vesak scene representing the Parinibbana of the Buddha at Kusinara"
+                />
+              </figure>
+            </article>
+            <div class="themagula-banner-frame">
+              <div class="banner-bulbs" data-banner-bulbs aria-hidden="true"></div>
+              <img
+                class="themagula-banner"
+                src="assets/vesak/themagula-banner-chatgpt-wide-transparent.png"
+                alt="සම්බුදු තෙමඟුල සමරමු"
+              />
+            </div>
+          </section>
+
+          <div class="pandol-base" aria-hidden="true">
+            <div class="foreground-bulbs" data-foreground-bulbs aria-hidden="true"></div>
+            <img class="pandol-foreground-image" src="assets/vesak/pandol-foreground-transparent.png" alt="" />
+          </div>
+        </article>
+
+        <section class="controls" aria-label="Pandol light controls">
+          <button class="control-button" type="button" data-lights-toggle aria-pressed="true">Lights On</button>
+          <button class="control-button song-button" type="button" data-song-toggle aria-pressed="false">
+            <span lang="si">බොදු බැති ගී සවන් දෙන්න</span>
+            <span class="button-translation">Listen to Buddhist devotional songs</span>
+          </button>
+          <button class="control-button song-button" type="button" data-donation-open>
+            <span lang="si">පින්වත් අය ආධාර ලබා දෙන්න</span>
+            <span class="button-translation">Offer a donation</span>
+          </button>
+          <button class="control-button" type="button" data-pattern-toggle>Change Light Pattern</button>
+          <button class="control-button" type="button" data-motion-toggle aria-pressed="false">Pause Animation</button>
+        </section>
+
+        <div class="donation-modal" data-donation-modal hidden>
+          <div class="donation-backdrop" data-donation-close></div>
+          <section class="donation-dialog" role="dialog" aria-modal="true" aria-labelledby="donation-title">
+            <button class="donation-close" type="button" data-donation-close aria-label="Close donation QR">×</button>
+            <p class="reflection-kicker">People's Pay</p>
+            <h2 id="donation-title" lang="si">පින්වත් අය ආධාර ලබා දෙන්න</h2>
+            <img class="donation-qr" src="assets/vesak/QRcode.png" alt="People's Pay QR code for online donations" />
+            <p class="donation-message">
+              Scan this QR from the People's Pay application to send money.<br />
+              <span>(www.peoplespay.lk)</span>
+            </p>
+          </section>
+        </div>
+      </section>
+
+      <section class="reflection" aria-labelledby="reflection-title">
+        <div class="reflection-card">
+          <p class="reflection-kicker">Vesak Blessing</p>
+          <h2 id="reflection-title">May All Beings Be Well and Peaceful</h2>
+          <p>
+            On this sacred Vesak occasion, may the teachings of compassion, loving-kindness and wisdom illuminate every heart.
+          </p>
+          <p class="sinhala-blessing" lang="si">සියලු සත්ත්වයෝ නිදුක් වෙත්වා, නිරෝගී වෙත්වා, සුවපත් වෙත්වා.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Designed in honour of Vesak <span aria-hidden="true">•</span> Digital Vesak Pandol</p>
+    </footer>
+
+    <script src="js/vesak-pandol.js"></script>
+  </body>
+</html>
