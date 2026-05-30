@@ -1650,7 +1650,7 @@ select {
 
 .reflection-card {
   width: min(100%, 850px);
-  margin: 0 auto;
+  margin: 5cm auto 0;
   padding: clamp(1.4rem, 4vw, 2.8rem);
   border: 1px solid rgba(244, 196, 48, 0.34);
   border-radius: 0.8rem;
@@ -2378,6 +2378,7 @@ select {
   }
 
   .reflection-card .sinhala-blessing {
+    margin-top: 1rem;
     font-size: unset;
   }
 
@@ -2417,6 +2418,10 @@ select {
     font-size: clamp(2.4rem, 11vw, 4rem) !important;
     line-height: 0.95 !important;
     margin-bottom: 0.5rem !important;
+  }
+
+  .pandol-foreground-image {
+    bottom: calc(-0.55rem - 5cm) !important;
   }
 
   .banner-light-wrapper,
