@@ -25,6 +25,7 @@
   };
   const patterns = ["pattern-flow", "pattern-alternate", "pattern-glow"];
   const patternLabels = ["Five Colour Flow", "Sacred Alternating Lights", "Golden Serenity"];
+  const compactControlsQuery = window.matchMedia("(max-width: 768px)");
   const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const pandolLightSettings = {
     step: 1,
@@ -46,6 +47,12 @@
   let pandolLightPoints = [];
   let pandolLightAnimationId = null;
   let pandolLightStartTime = 0;
+
+  const updatePatternButtonLabel = () => {
+    if (!patternToggle) return;
+
+    patternToggle.textContent = compactControlsQuery.matches ? "Pattern" : `Pattern: ${patternLabels[currentPattern]}`;
+  };
 
   const createElement = (className, styles) => {
     const element = document.createElement("span");
@@ -600,9 +607,7 @@
     currentPattern = nextPattern;
     body.classList.add(patterns[currentPattern]);
 
-    if (patternToggle) {
-      patternToggle.textContent = `Pattern: ${patternLabels[currentPattern]}`;
-    }
+    updatePatternButtonLabel();
 
     if (reducedMotionQuery.matches || body.classList.contains("animations-paused")) {
       drawGlowFrame(performance.now());
@@ -727,5 +732,6 @@
   setPattern(1);
   initPandolLights();
 
+  compactControlsQuery.addEventListener?.("change", updatePatternButtonLabel);
   window.addEventListener("resize", rebuildResponsiveEffects);
 })();

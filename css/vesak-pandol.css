@@ -2361,6 +2361,111 @@ select {
   }
 }
 
+/* Mobile-only tightening: remove the old in-frame title layer, close the
+   pandol/water gap, and let the fixed controls breathe. */
+@media (max-width: 768px) {
+  html,
+  body {
+    min-width: 320px !important;
+    overflow-x: hidden;
+  }
+
+  body {
+    padding-bottom: 7rem;
+  }
+
+  .vesak-sky {
+    min-width: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
+    padding: 0.85rem 0.75rem 1rem !important;
+  }
+
+  .page-intro {
+    width: 100%;
+    margin: 0 auto 0.55rem;
+  }
+
+  .intro-kicker,
+  .intro-song-button,
+  .pandol-header,
+  .pandol-header .header-label,
+  .pandol-header .header-subtitle,
+  .pandol-header .header-events,
+  .pandol-header h2 {
+    display: none !important;
+  }
+
+  .page-intro h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 13vw, 3.4rem);
+    line-height: 1.05;
+  }
+
+  .pandol {
+    width: 100%;
+    min-height: clamp(28rem, 116vw, 39rem) !important;
+    height: auto !important;
+    margin: 0.45rem auto 0 !important;
+    padding: 0 0.2rem 0.35rem !important;
+  }
+
+  .thorana-decor {
+    top: -1.15rem;
+    width: 112%;
+    height: clamp(25rem, 104vw, 36rem);
+  }
+
+  .themagula-banner-frame {
+    top: calc(65% + 0.35rem) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .pandol-base {
+    height: clamp(4.8rem, 18vw, 6.5rem);
+    margin: 0 -0.4rem -0.35rem;
+  }
+
+  .pandol-foreground-image {
+    bottom: -0.45rem;
+  }
+
+  .reflection {
+    margin-top: 0 !important;
+    padding-top: 1rem !important;
+  }
+
+  .controls {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: max(0.75rem, env(safe-area-inset-bottom));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+    width: auto;
+    padding: 0.65rem;
+    transform: none;
+    border-radius: 1.25rem;
+  }
+
+  .control-button {
+    flex: 1 1 42%;
+    min-width: 120px;
+    min-height: 2.35rem;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.72rem;
+    line-height: 1.15;
+    white-space: normal;
+  }
+
+  .controls .button-translation {
+    font-size: 0.62rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
