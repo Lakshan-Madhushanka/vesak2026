@@ -120,6 +120,13 @@ select {
   pointer-events: none;
 }
 
+@media (min-width: 769px) {
+  .lantern-field {
+    z-index: 0;
+    display: block;
+  }
+}
+
 .star {
   position: absolute;
   left: var(--x);
