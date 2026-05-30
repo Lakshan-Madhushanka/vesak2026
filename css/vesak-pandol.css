@@ -242,7 +242,7 @@ select {
 
 .pandol-base {
   position: absolute;
-  z-index: 6;
+  z-index: 20;
 }
 
 .pandol::before,
@@ -362,6 +362,34 @@ select {
   content: none;
 }
 
+.color-light-wrapper {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  line-height: 0;
+}
+
+.color-light-img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.color-light-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: transparent;
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  filter: brightness(1.0) saturate(1.05);
+}
+
 .pandol-frame-wrapper {
   position: relative;
   isolation: isolate;
@@ -398,12 +426,18 @@ select {
   filter: brightness(1.0) saturate(1.05);
 }
 
+.banner-light-canvas {
+  z-index: 3;
+  opacity: 0.65;
+}
+
 .pandol-frame-wrapper.light-fallback {
   filter: drop-shadow(0 0 8px rgba(255, 190, 80, 0.55));
 }
 
 .pandol-frame-wrapper.lights-off .pandol-light-canvas,
-.lights-off .pandol-light-canvas {
+.lights-off .pandol-light-canvas,
+.lights-off .color-light-canvas {
   display: none;
 }
 
@@ -737,6 +771,15 @@ select {
   animation-delay: -3.6s;
 }
 
+.light-layer-five {
+  --light-layer-inset: 38%;
+  --light-core: rgba(247, 247, 242, 0.9);
+  --light-halo: rgba(244, 196, 48, 0.28);
+  --ring-haze: rgba(247, 247, 242, 0.08);
+  display: none;
+  animation-delay: -4.5s;
+}
+
 .story-art::before {
   content: "";
   position: absolute;
@@ -981,7 +1024,7 @@ select {
 .themagula-banner-frame {
   position: absolute;
   left: 50%;
-  top: calc(68.5% + 2.05cm);
+  top: calc(68.5% + 2.55cm);
   z-index: 9;
   width: 100%;
   aspect-ratio: 13.5 / 2;
@@ -1429,19 +1472,17 @@ select {
   overflow: visible;
   height: clamp(9.5rem, 14vw, 12.8rem);
   margin: 0 -2.4rem -1.4rem;
-  border-top: 1px solid rgba(244, 196, 48, 0.42);
-  background:
-    linear-gradient(180deg, rgba(5, 10, 25, 0.06), rgba(5, 10, 25, 0.54));
-  box-shadow:
-    inset 0 0.7rem 1.4rem rgba(5, 10, 25, 0.78),
-    0 -0.3rem 1.2rem rgba(244, 196, 48, 0.12);
+  border-top: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .pandol-foreground-image {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(-0.55rem - 5cm);
+  bottom: calc(-0.55rem - 6cm);
+  z-index: 21;
   width: 100%;
   height: auto;
   opacity: 0.96;
@@ -2077,7 +2118,7 @@ select {
   .themagula-banner-frame {
     position: absolute;
     left: 50%;
-    top: calc(68.5% + 2.05cm);
+    top: calc(68.5% + 2.55cm);
     z-index: 9;
     width: 100%;
     aspect-ratio: 13.5 / 2;
@@ -2249,7 +2290,7 @@ select {
     position: absolute;
     left: 50%;
     right: auto;
-    top: 21.3%;
+    top: calc(21.3% + 1cm);
     z-index: 1;
     display: block;
     width: var(--enlightenment-light-size);
@@ -2376,6 +2417,101 @@ select {
     font-size: clamp(2.4rem, 11vw, 4rem) !important;
     line-height: 0.95 !important;
     margin-bottom: 0.5rem !important;
+  }
+
+  .banner-light-wrapper,
+  .themagula-banner-frame {
+    width: 90% !important;
+    max-width: 90% !important;
+    left: 50% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .banner-light-img,
+  .themagula-banner {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .story-birth .story-art {
+    transform: translate(76px, -60px) scale(1.20) !important;
+    transform-origin: center center;
+  }
+
+  .featured-panel .story-art {
+    transform: translateX(-50%) translateY(-60px) scale(1.20) !important;
+    transform-origin: center center;
+  }
+
+  .story-parinibbana .story-art {
+    transform: translate(-76px, -60px) scale(1.20) !important;
+    transform-origin: center center;
+  }
+
+  .story-image {
+    object-fit: contain !important;
+    object-position: center center !important;
+  }
+
+  .enlightenment-light-set {
+    top: 21.3% !important;
+    transform: translateX(-50%) !important;
+    margin-top: 1.5cm !important;
+  }
+
+  .enlightenment-light-layer {
+    translate: 0 1.5cm !important;
+  }
+
+  .light-layer-one {
+    --light-layer-inset: 0;
+  }
+
+  .light-layer-two {
+    --light-layer-inset: 7%;
+  }
+
+  .light-layer-three {
+    --light-layer-inset: 14%;
+  }
+
+  .light-layer-four {
+    --light-layer-inset: 21%;
+  }
+
+  .light-layer-five {
+    --light-layer-inset: 28%;
+    display: block;
+  }
+
+  .enlightenment-light-layer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(circle at 50% 0%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 70% 5%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 86% 16%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 97% 36%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 100% 50%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 97% 64%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 86% 84%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 70% 95%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 50% 100%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 30% 95%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 14% 84%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 3% 64%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 0% 50%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 3% 36%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 14% 16%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem),
+      radial-gradient(circle at 30% 5%, var(--light-core) 0 0.08rem, var(--light-halo) 0.09rem 0.2rem, transparent 0.24rem);
+    opacity: 0.72;
+    pointer-events: none;
+    transform: rotate(11.25deg);
   }
 
   .controls {

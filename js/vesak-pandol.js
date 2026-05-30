@@ -7,9 +7,7 @@
   const thoranaBulbField = document.querySelector("[data-thorana-bulbs]");
   const foregroundBulbField = document.querySelector("[data-foreground-bulbs]");
   const bannerBulbField = document.querySelector("[data-banner-bulbs]");
-  const pandolFrameWrapper = document.querySelector(".pandol-frame-wrapper");
-  const pandolFrameImg = document.querySelector(".pandol-frame-img");
-  const pandolLightCanvas = document.querySelector(".pandol-light-canvas");
+  const colorLightWrappers = document.querySelectorAll(".color-light-wrapper");
   const lightsToggle = document.querySelector("[data-lights-toggle]");
   const songToggles = document.querySelectorAll("[data-song-toggle]");
   const donationOpenButtons = document.querySelectorAll("[data-donation-open]");
@@ -30,7 +28,12 @@
   const pandolLightSettings = {
     step: 1,
     minDistance: 2,
-    maxLights: 5000
+    maxLights: 5000,
+    skipWhiteGoldProbability: 0.55,
+    skipOrangeProbability: 0.2,
+    skipGreenProbability: 0.1,
+    skipRedBlueProbability: 0,
+    opacityBoost: 1
   };
   const LIGHT_VISIBILITY_BOOST = 2.16;
   const OFF_BULB_DARKNESS = 0.34;
@@ -43,10 +46,7 @@
     { color: "#F28C28", glow: "rgba(242, 140, 40, 0.5)" }
   ];
   let currentPattern = 0;
-  let pandolLightCtx = null;
-  let pandolLightPoints = [];
-  let pandolLightAnimationId = null;
-  let pandolLightStartTime = 0;
+  const colorLightInstances = [];
 
   const updatePatternButtonLabel = () => {
     if (!patternToggle) return;
@@ -205,27 +205,33 @@
 
   function classifyPixelColor(r, g, b) {
     const brightness = (r + g + b) / 3;
-    const saturation = Math.max(r, g, b) - Math.min(r, g, b);
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    const saturation = max - min;
 
-    if (brightness < 70 && saturation < 40) return null;
+    if (brightness < 85 && saturation < 45) return null;
 
     if (r > 235 && g > 235 && b > 220) {
       return { color: "rgba(255, 250, 220, 0.45)", type: "white" };
     }
 
-    if (r > 210 && g > 150 && g < 230 && b < 110) {
+    if (r > 205 && g > 145 && g < 235 && b < 120) {
       return { color: "rgba(255, 190, 60, 0.55)", type: "gold" };
     }
 
-    if (r > 150 && g < 115 && b < 115) {
+    if (r > 150 && g < 120 && b < 120) {
       return { color: "rgba(255, 45, 35, 0.65)", type: "red" };
     }
 
-    if (b > 120 && r < 130 && g < 180) {
-      return { color: "rgba(65, 135, 255, 0.65)", type: "blue" };
+    if (b > 120 && r < 140 && g < 190) {
+      return { color: "rgba(65, 135, 255, 0.68)", type: "blue" };
     }
 
-    if (r > 170 && g > 70 && g < 165 && b < 90) {
+    if (g > 115 && r < 145 && b < 145 && g > r * 1.12 && g > b * 1.12) {
+      return { color: "rgba(80, 220, 95, 0.58)", type: "green" };
+    }
+
+    if (r > 175 && g > 70 && g < 170 && b < 100) {
       return { color: "rgba(255, 125, 25, 0.58)", type: "orange" };
     }
 
@@ -287,30 +293,39 @@
     return accepted;
   }
 
-  function resizePandolCanvas() {
-    if (!pandolLightCanvas) return;
+  function resizeColorLightCanvas(instance) {
+    if (!instance.canvas) return;
 
-    const rect = pandolLightCanvas.getBoundingClientRect();
+    const rect = instance.canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
 
     const dpr = window.devicePixelRatio || 1;
-    pandolLightCanvas.width = Math.round(rect.width * dpr);
-    pandolLightCanvas.height = Math.round(rect.height * dpr);
+    instance.canvas.width = Math.round(rect.width * dpr);
+    instance.canvas.height = Math.round(rect.height * dpr);
 
-    if (!pandolLightCtx) {
-      pandolLightCtx = pandolLightCanvas.getContext("2d");
+    if (!instance.ctx) {
+      instance.ctx = instance.canvas.getContext("2d");
     }
 
-    if (pandolLightCtx) {
-      pandolLightCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (instance.ctx) {
+      instance.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
   }
 
-  function extractLightPoints() {
-    if (!pandolFrameImg || !pandolFrameImg.naturalWidth || !pandolFrameImg.naturalHeight) return [];
+  const shouldSkipLightType = (type, options) => {
+    if (type === "white" || type === "gold") return Math.random() < options.skipWhiteGoldProbability;
+    if (type === "orange") return Math.random() < options.skipOrangeProbability;
+    if (type === "green") return Math.random() < options.skipGreenProbability;
+    if (type === "red" || type === "blue") return Math.random() < options.skipRedBlueProbability;
+    return false;
+  };
 
-    const width = pandolFrameImg.naturalWidth;
-    const height = pandolFrameImg.naturalHeight;
+  function extractLightPoints(instance) {
+    const { img, wrapper, options } = instance;
+    if (!img || !img.naturalWidth || !img.naturalHeight) return [];
+
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
     const offscreen = document.createElement("canvas");
     const offscreenCtx = offscreen.getContext("2d", { willReadFrequently: true });
     const points = [];
@@ -319,20 +334,20 @@
 
     offscreen.width = width;
     offscreen.height = height;
-    offscreenCtx.drawImage(pandolFrameImg, 0, 0, width, height);
+    offscreenCtx.drawImage(img, 0, 0, width, height);
 
     let pixels;
 
     try {
       pixels = offscreenCtx.getImageData(0, 0, width, height).data;
-      pandolFrameWrapper?.classList.remove("light-fallback");
+      wrapper.classList.remove("light-fallback");
     } catch (error) {
-      pandolFrameWrapper?.classList.add("light-fallback");
+      wrapper.classList.add("light-fallback");
       return points;
     }
 
-    for (let y = 0; y < height; y += pandolLightSettings.step) {
-      for (let x = 0; x < width; x += pandolLightSettings.step) {
+    for (let y = 0; y < height; y += options.step) {
+      for (let x = 0; x < width; x += options.step) {
         const index = (y * width + x) * 4;
         const r = pixels[index];
         const g = pixels[index + 1];
@@ -349,7 +364,7 @@
         const light = classifyPixelColor(r, g, b);
         if (!light) continue;
 
-        if ((light.type === "white" || light.type === "gold") && Math.random() < 0.55) continue;
+        if (shouldSkipLightType(light.type, options)) continue;
 
         points.push({
           x,
@@ -360,33 +375,35 @@
           type: light.type,
           radius: getTightLightRadius(r, g, b),
           speed: 2.5 + Math.random() * 3.5,
-          brightnessMultiplier: 1.2 + Math.random() * 0.8,
+          brightnessMultiplier: (1.2 + Math.random() * 0.8) * options.opacityBoost,
           phase: ((x * 0.021 + y * 0.037) % (Math.PI * 2)),
           sort: (Math.sin(x * 12.9898 + y * 78.233) * 43758.5453) % 1
         });
       }
     }
 
-    const lightPoints = reduceLightPoints(points, pandolLightSettings.minDistance, pandolLightSettings.maxLights);
-    console.log("Pandol light points extracted:", lightPoints.length);
+    const lightPoints = reduceLightPoints(points, options.minDistance, options.maxLights);
 
     if (lightPoints.length < 500) {
-      console.warn("Pandol light point count is low; detection may still be too strict.");
+      console.warn("Colour-matched light point count is low for", wrapper.className);
     }
 
     if (DEBUG_LIGHTS) {
-      console.log("Pandol light points:", lightPoints.length);
+      const greenCount = lightPoints.filter((point) => point.type === "green").length;
+      console.log("Light points for", wrapper.className, lightPoints.length);
+      console.log("Green light points detected:", greenCount);
     }
 
     return lightPoints;
   }
 
-  const getRenderedFrameRect = (width, height) => {
-    if (!pandolFrameImg?.naturalWidth || !pandolFrameImg?.naturalHeight || !width || !height) {
+  const getRenderedImageRect = (instance, width, height) => {
+    const { img } = instance;
+    if (!img?.naturalWidth || !img?.naturalHeight || !width || !height) {
       return { x: 0, y: 0, width, height };
     }
 
-    const imageRatio = pandolFrameImg.naturalWidth / pandolFrameImg.naturalHeight;
+    const imageRatio = img.naturalWidth / img.naturalHeight;
     const canvasRatio = width / height;
     let renderedWidth = width;
     let renderedHeight = height;
@@ -399,7 +416,7 @@
       renderedHeight = width / imageRatio;
     }
 
-    const objectPosition = window.getComputedStyle(pandolFrameImg).objectPosition;
+    const objectPosition = window.getComputedStyle(img).objectPosition;
     const x = (width - renderedWidth) / 2;
     let y = height - renderedHeight;
 
@@ -412,37 +429,37 @@
     return { x, y, width: renderedWidth, height: renderedHeight };
   };
 
-  function drawGlowFrame(time) {
-    if (!pandolLightCtx || !pandolLightCanvas || !pandolFrameImg || pandolLightPoints.length === 0) {
-      pandolLightAnimationId = null;
+  function drawGlowFrame(instance, time) {
+    if (!instance.ctx || !instance.canvas || !instance.img || instance.lightPoints.length === 0) {
+      instance.animationId = null;
       return;
     }
 
-    const rect = pandolLightCanvas.getBoundingClientRect();
+    const rect = instance.canvas.getBoundingClientRect();
     const width = rect.width;
     const height = rect.height;
 
     if (!width || !height) {
-      pandolLightAnimationId = null;
+      instance.animationId = null;
       return;
     }
 
-    pandolLightCtx.clearRect(0, 0, width, height);
+    instance.ctx.clearRect(0, 0, width, height);
 
     if (body.classList.contains("lights-off")) {
-      pandolLightAnimationId = null;
+      instance.animationId = null;
       return;
     }
 
-    const frameRect = getRenderedFrameRect(width, height);
-    const frameScale = Math.max(0.65, Math.min(1.2, frameRect.width / pandolFrameImg.naturalWidth));
+    const frameRect = getRenderedImageRect(instance, width, height);
+    const frameScale = Math.max(0.65, Math.min(1.2, frameRect.width / instance.img.naturalWidth));
     const brightnessBoost = currentPattern === 2 ? 1.12 : 1;
     const shouldAnimate = !reducedMotionQuery.matches && !body.classList.contains("animations-paused");
-    const elapsed = shouldAnimate ? (time - pandolLightStartTime) / 1000 : 0;
+    const elapsed = shouldAnimate ? (time - instance.startTime) / 1000 : 0;
 
-    pandolLightCtx.globalCompositeOperation = "source-over";
+    instance.ctx.globalCompositeOperation = "source-over";
 
-    for (const point of pandolLightPoints) {
+    for (const point of instance.lightPoints) {
       const x = frameRect.x + point.xRatio * frameRect.width;
       const y = frameRect.y + point.yRatio * frameRect.height;
       const blink = shouldAnimate ? 0.65 + Math.sin(elapsed * point.speed + point.phase) * 0.22 : 0.76;
@@ -453,21 +470,21 @@
       if (offStrength <= 0.02) continue;
 
       const darkRadius = visibleRadius * 1.28;
-      const darkGradient = pandolLightCtx.createRadialGradient(x, y, 0, x, y, darkRadius);
+      const darkGradient = instance.ctx.createRadialGradient(x, y, 0, x, y, darkRadius);
 
       darkGradient.addColorStop(0, `rgba(0, 0, 0, ${Math.min(OFF_BULB_DARKNESS, offStrength * OFF_BULB_DARKNESS)})`);
       darkGradient.addColorStop(0.68, `rgba(13, 8, 4, ${Math.min(0.22, offStrength * 0.22)})`);
       darkGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
-      pandolLightCtx.fillStyle = darkGradient;
-      pandolLightCtx.beginPath();
-      pandolLightCtx.arc(x, y, darkRadius, 0, Math.PI * 2);
-      pandolLightCtx.fill();
+      instance.ctx.fillStyle = darkGradient;
+      instance.ctx.beginPath();
+      instance.ctx.arc(x, y, darkRadius, 0, Math.PI * 2);
+      instance.ctx.fill();
     }
 
-    pandolLightCtx.globalCompositeOperation = "lighter";
+    instance.ctx.globalCompositeOperation = "lighter";
 
-    for (const [index, point] of pandolLightPoints.entries()) {
+    for (const [index, point] of instance.lightPoints.entries()) {
       const x = frameRect.x + point.xRatio * frameRect.width;
       const y = frameRect.y + point.yRatio * frameRect.height;
       const blink = shouldAnimate ? 0.65 + Math.sin(elapsed * point.speed + point.phase) * 0.22 : 0.76;
@@ -477,103 +494,155 @@
       const baseAlpha = getLightAlpha(point.color);
       const glowAlpha = Math.min(baseAlpha * (0.2 + blink * 0.28) * brightnessBoost, 0.38);
       const coreAlpha = Math.min(baseAlpha * (0.55 + blink * 0.35) * brightnessBoost, 0.62);
-      const gradient = pandolLightCtx.createRadialGradient(x, y, 0, x, y, outerRadius);
+      const gradient = instance.ctx.createRadialGradient(x, y, 0, x, y, outerRadius);
 
       gradient.addColorStop(0, withLightAlpha(point.color, coreAlpha));
       gradient.addColorStop(0.48, withLightAlpha(point.color, glowAlpha));
       gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
 
-      pandolLightCtx.fillStyle = gradient;
-      pandolLightCtx.beginPath();
-      pandolLightCtx.arc(x, y, outerRadius, 0, Math.PI * 2);
-      pandolLightCtx.fill();
+      instance.ctx.fillStyle = gradient;
+      instance.ctx.beginPath();
+      instance.ctx.arc(x, y, outerRadius, 0, Math.PI * 2);
+      instance.ctx.fill();
 
-      pandolLightCtx.fillStyle = withLightAlpha(point.color, coreAlpha);
-      pandolLightCtx.beginPath();
-      pandolLightCtx.arc(x, y, Math.max(0.6, visibleRadius * 0.38), 0, Math.PI * 2);
-      pandolLightCtx.fill();
+      instance.ctx.fillStyle = withLightAlpha(point.color, coreAlpha);
+      instance.ctx.beginPath();
+      instance.ctx.arc(x, y, Math.max(0.6, visibleRadius * 0.38), 0, Math.PI * 2);
+      instance.ctx.fill();
 
       if (DEBUG_LIGHTS && index % 18 === 0) {
-        pandolLightCtx.fillStyle = "rgba(255, 255, 255, 0.28)";
-        pandolLightCtx.beginPath();
-        pandolLightCtx.arc(x, y, 1.1, 0, Math.PI * 2);
-        pandolLightCtx.fill();
+        instance.ctx.fillStyle = "rgba(255, 255, 255, 0.28)";
+        instance.ctx.beginPath();
+        instance.ctx.arc(x, y, 1.1, 0, Math.PI * 2);
+        instance.ctx.fill();
       }
     }
 
-    pandolLightCtx.globalCompositeOperation = "source-over";
+    instance.ctx.globalCompositeOperation = "source-over";
 
     if (shouldAnimate) {
-      pandolLightAnimationId = requestAnimationFrame(drawGlowFrame);
+      instance.animationId = requestAnimationFrame((nextTime) => drawGlowFrame(instance, nextTime));
     } else {
-      pandolLightAnimationId = null;
+      instance.animationId = null;
     }
   }
 
-  function startPandolLightAnimation() {
-    if (!pandolLightCanvas || !pandolLightCtx || pandolLightPoints.length === 0 || body.classList.contains("lights-off")) return;
+  function startColorLightAnimation(instance) {
+    if (!instance.canvas || !instance.ctx || instance.lightPoints.length === 0 || body.classList.contains("lights-off")) return;
 
-    if (!pandolLightStartTime) {
-      pandolLightStartTime = performance.now();
+    if (!instance.startTime) {
+      instance.startTime = performance.now();
     }
 
     if (reducedMotionQuery.matches || body.classList.contains("animations-paused")) {
-      pausePandolLightAnimation();
-      drawGlowFrame(performance.now());
+      pauseColorLightAnimation(instance);
+      drawGlowFrame(instance, performance.now());
       return;
     }
 
-    if (!pandolLightAnimationId) {
-      pandolLightAnimationId = requestAnimationFrame(drawGlowFrame);
+    if (!instance.animationId) {
+      instance.animationId = requestAnimationFrame((time) => drawGlowFrame(instance, time));
     }
   }
 
-  function pausePandolLightAnimation() {
-    if (pandolLightAnimationId) {
-      cancelAnimationFrame(pandolLightAnimationId);
-      pandolLightAnimationId = null;
+  function pauseColorLightAnimation(instance) {
+    if (instance.animationId) {
+      cancelAnimationFrame(instance.animationId);
+      instance.animationId = null;
     }
   }
 
-  function initPandolLights() {
-    if (!pandolFrameWrapper || !pandolFrameImg || !pandolLightCanvas) return;
+  const eachColorLightInstance = (callback) => {
+    colorLightInstances.forEach(callback);
+  };
 
-    pandolLightCtx = pandolLightCanvas.getContext("2d");
-    if (!pandolLightCtx) return;
+  const startAllColorLightAnimations = () => {
+    eachColorLightInstance(startColorLightAnimation);
+  };
 
-    const prepareLights = () => {
-      resizePandolCanvas();
-      pandolLightPoints = extractLightPoints();
-      drawGlowFrame(performance.now());
-      startPandolLightAnimation();
+  const pauseAllColorLightAnimations = () => {
+    eachColorLightInstance(pauseColorLightAnimation);
+  };
+
+  const drawAllColorLights = () => {
+    eachColorLightInstance((instance) => drawGlowFrame(instance, performance.now()));
+  };
+
+  const resizeAllColorLightCanvases = () => {
+    eachColorLightInstance(resizeColorLightCanvas);
+  };
+
+  function initColorMatchedLights(wrapper, options = {}) {
+    const img = wrapper.querySelector(".color-light-img");
+    const canvas = wrapper.querySelector(".color-light-canvas");
+
+    if (!img || !canvas) return;
+
+    const instance = {
+      wrapper,
+      img,
+      canvas,
+      ctx: canvas.getContext("2d"),
+      lightPoints: [],
+      animationId: null,
+      startTime: 0,
+      options: { ...pandolLightSettings, ...options }
     };
 
-    if (pandolFrameImg.complete && pandolFrameImg.naturalWidth > 0) {
+    if (!instance.ctx) return;
+
+    colorLightInstances.push(instance);
+
+    const prepareLights = () => {
+      resizeColorLightCanvas(instance);
+      instance.lightPoints = extractLightPoints(instance);
+      drawGlowFrame(instance, performance.now());
+      startColorLightAnimation(instance);
+    };
+
+    if (img.complete && img.naturalWidth > 0) {
       prepareLights();
     } else {
-      pandolFrameImg.addEventListener("load", prepareLights, { once: true });
-      pandolFrameImg.addEventListener("error", () => {
-        pandolFrameWrapper.classList.add("light-fallback");
+      img.addEventListener("load", prepareLights, { once: true });
+      img.addEventListener("error", () => {
+        wrapper.classList.add("light-fallback");
       }, { once: true });
     }
 
     if ("ResizeObserver" in window) {
       const resizeObserver = new ResizeObserver(() => {
-        resizePandolCanvas();
+        resizeColorLightCanvas(instance);
         if (reducedMotionQuery.matches || body.classList.contains("animations-paused")) {
-          drawGlowFrame(performance.now());
+          drawGlowFrame(instance, performance.now());
         }
       });
 
-      resizeObserver.observe(pandolFrameWrapper);
+      resizeObserver.observe(wrapper);
     }
+  }
+
+  function initAllColorMatchedLights() {
+    colorLightWrappers.forEach((wrapper) => {
+      const isBanner = wrapper.classList.contains("banner-light-wrapper");
+
+      initColorMatchedLights(wrapper, isBanner ? {
+        step: 3,
+        minDistance: 5,
+        maxLights: 1400,
+        opacityBoost: 0.85,
+        skipWhiteGoldProbability: 0.7,
+        skipOrangeProbability: 0.35,
+        skipGreenProbability: 0.2,
+        skipRedBlueProbability: 0.1
+      } : {});
+    });
 
     reducedMotionQuery.addEventListener?.("change", () => {
       if (reducedMotionQuery.matches) {
-        pausePandolLightAnimation();
-        drawGlowFrame(performance.now());
+        pauseAllColorLightAnimations();
+        drawAllColorLights();
       } else {
-        startPandolLightAnimation();
+        startAllColorLightAnimations();
       }
     });
   }
@@ -610,7 +679,7 @@
     updatePatternButtonLabel();
 
     if (reducedMotionQuery.matches || body.classList.contains("animations-paused")) {
-      drawGlowFrame(performance.now());
+      drawAllColorLights();
     }
   };
 
@@ -618,14 +687,16 @@
     if (lightsToggle) {
       lightsToggle.addEventListener("click", () => {
         const lightsAreOff = body.classList.toggle("lights-off");
-        pandolFrameWrapper?.classList.toggle("lights-off", lightsAreOff);
+        colorLightInstances.forEach((instance) => {
+          instance.wrapper.classList.toggle("lights-off", lightsAreOff);
+        });
         lightsToggle.textContent = lightsAreOff ? "Lights Off" : "Lights On";
         lightsToggle.setAttribute("aria-pressed", String(!lightsAreOff));
 
         if (lightsAreOff) {
-          pausePandolLightAnimation();
+          pauseAllColorLightAnimations();
         } else {
-          startPandolLightAnimation();
+          startAllColorLightAnimations();
         }
       });
     }
@@ -697,10 +768,10 @@
         motionToggle.setAttribute("aria-pressed", String(isPaused));
 
         if (isPaused) {
-          pausePandolLightAnimation();
-          drawGlowFrame(performance.now());
+          pauseAllColorLightAnimations();
+          drawAllColorLights();
         } else {
-          startPandolLightAnimation();
+          startAllColorLightAnimations();
         }
       });
     }
@@ -718,9 +789,9 @@
     buildStars();
     buildLanterns();
     buildBulbs();
-    resizePandolCanvas();
+    resizeAllColorLightCanvases();
     if (reducedMotionQuery.matches || body.classList.contains("animations-paused")) {
-      drawGlowFrame(performance.now());
+      drawAllColorLights();
     }
   }, 250);
 
@@ -730,7 +801,7 @@
   setupImageFallbacks();
   setupControls();
   setPattern(1);
-  initPandolLights();
+  initAllColorMatchedLights();
 
   compactControlsQuery.addEventListener?.("change", updatePatternButtonLabel);
   window.addEventListener("resize", rebuildResponsiveEffects);
