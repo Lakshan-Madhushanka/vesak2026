@@ -2459,11 +2459,11 @@ select {
   .enlightenment-light-set {
     top: 21.3% !important;
     transform: translateX(-50%) !important;
-    margin-top: 1.5cm !important;
+    margin-top: 2.5cm !important;
   }
 
   .enlightenment-light-layer {
-    translate: 0 1.5cm !important;
+    translate: 0 2.5cm !important;
   }
 
   .light-layer-one {
