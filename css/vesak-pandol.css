@@ -36,6 +36,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: auto;
 }
 
 body {
@@ -45,6 +46,7 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   line-height: 1.6;
+  overflow-x: auto;
 }
 
 body.lights-off {
@@ -1437,11 +1439,11 @@ select {
 
 .pandol-foreground-image {
   position: absolute;
-  left: 50%;
+  left: 0;
+  right: 0;
   bottom: calc(-0.55rem - 5cm);
-  width: min(calc(100% - 6cm), calc(1240px - 6cm));
+  width: 100%;
   height: auto;
-  transform: translateX(-50%);
   opacity: 0.96;
   filter: drop-shadow(0 -0.4rem 1.2rem rgba(244, 196, 48, 0.16));
   pointer-events: none;
@@ -1980,263 +1982,377 @@ select {
   }
 }
 
+/* Desktop layout on mobile - no responsive stacking */
 @media (max-width: 980px) {
-  .page-intro h1 {
-    font-size: 3.6rem;
-  }
-
+  /* Keep desktop pandol dimensions and positioning */
   .pandol {
-    min-height: 0;
-    margin-top: clamp(3.4rem, 8vw, 4.8rem);
-    padding: clamp(3rem, 6vw, 4rem) clamp(1.2rem, 2.2vw, 1.8rem) clamp(1.2rem, 2.2vw, 1.8rem);
+    width: min(100%, 1250px);
+    min-height: clamp(43rem, 58vw, 52rem);
+    margin: clamp(7.2rem, 10vw, 9rem) auto 0;
+    padding: 0 clamp(1.2rem, 2.2vw, 1.8rem) clamp(1.2rem, 2.2vw, 1.8rem);
   }
 
   .pandol-header {
-    position: relative;
-    top: auto;
-    left: auto;
+    position: absolute;
+    display: block;
+    width: auto;
+    top: 18%;
+    left: 50%;
+    z-index: 12;
+    transform: translateX(-50%);
+    margin: 0;
+  }
+
+  .story-panels {
+    position: absolute;
+    inset: 0;
+    display: block;
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .story-panel {
+    position: static;
+    display: contents;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    grid-template-rows: unset;
+  }
+
+  .featured-panel {
     transform: none;
-    width: min(100%, 860px);
-    margin: 0 auto clamp(1rem, 2vw, 1.6rem);
+    display: contents;
+  }
+
+  .featured-panel .story-art {
+    position: absolute;
+    left: 50%;
+    top: 22.5%;
+    width: 19%;
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    box-shadow:
+      0 0 1rem rgba(244, 196, 48, 0.15),
+      0 0 2rem rgba(214, 40, 40, 0.08);
+  }
+
+  .story-birth .story-art {
+    position: absolute;
+    left: 17.2%;
+    top: 31.5%;
+    width: 18.4%;
+    height: 24.5%;
+    border-radius: 44% 44% 0.6rem 0.6rem / 28% 28% 0.6rem 0.6rem;
+  }
+
+  .story-parinibbana .story-art {
+    position: absolute;
+    right: 17.2%;
+    top: 31.5%;
+    width: 18.4%;
+    height: 24.5%;
+    border-radius: 44% 44% 0.6rem 0.6rem / 28% 28% 0.6rem 0.6rem;
+  }
+
+  .enlightenment-light-set {
+    --enlightenment-light-size: clamp(8.5rem, 23%, 15.75rem);
+    position: absolute;
+    left: 50%;
+    top: 21.3%;
+    z-index: 1;
+    display: block;
+    width: var(--enlightenment-light-size);
+    height: var(--enlightenment-light-size);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.96;
+    mix-blend-mode: screen;
+  }
+
+  .themagula-banner-frame {
+    position: absolute;
+    left: 50%;
+    top: calc(68.5% + 2.05cm);
+    z-index: 9;
+    width: 100%;
+    aspect-ratio: 13.5 / 2;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 0.9rem rgba(244, 196, 48, 0.28));
+    pointer-events: none;
+  }
+
+  .panel-copy {
+    position: absolute;
+    display: block;
+  }
+
+  .thorana-decor {
+    position: absolute;
+    left: 50%;
+    top: calc(clamp(0.6rem, 1.6vw, 1.6rem) - 3cm);
+    height: clamp(36rem, 53vw, 47rem);
+    bottom: auto;
+    width: min(116%, 1440px);
+    transform: translateX(-50%);
+    z-index: 5;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .thorana-frame-image {
+    object-fit: contain;
+    object-position: center bottom;
+    opacity: 0.96;
+  }
+
+  .pandol-base {
+    position: absolute;
+    z-index: 6;
+  }
+
+  .pandol-foreground-image {
+    width: 100%;
+    opacity: 1;
+  }
+
+  .pandol-pillar {
+    display: none;
+    opacity: 0.48;
+  }
+
+  .reflection-card h2 {
+    font-size: 2.25rem;
+  }
+}
+
+/* Desktop layout maintained on small screens - no responsive stacking */
+@media (max-width: 640px) {
+  /* Keep all desktop dimensions and positioning */
+  html,
+  body {
+    min-width: 1280px;
+    overflow-x: auto;
+  }
+
+  .vesak-sky {
+    min-width: 1280px;
+    padding: clamp(1.25rem, 3vw, 2.25rem) var(--page-pad) clamp(2rem, 5vw, 4rem);
+  }
+
+  .page-intro {
+    width: min(100%, 1250px);
+    margin: 0 auto clamp(0.9rem, 2vw, 1.4rem);
+  }
+
+  .page-intro h1 {
+    font-size: 4.8rem;
+  }
+
+  .pandol {
+    width: min(100%, 1250px);
+    min-height: clamp(43rem, 58vw, 52rem);
+    margin: clamp(7.2rem, 10vw, 9rem) auto 0;
+    padding: 0 clamp(1.2rem, 2.2vw, 1.8rem) clamp(1.2rem, 2.2vw, 1.8rem);
+  }
+
+  .pandol-header {
+    position: absolute;
+    display: block;
+    top: 18%;
+    left: 50%;
+    z-index: 12;
+    transform: translateX(-50%);
+    width: auto;
+    margin: 0;
+    border-radius: unset;
   }
 
   .pandol-header h2 {
-    font-size: 3.25rem;
+    font-size: clamp(2.7rem, 4.4vw, 3.8rem);
+  }
+
+  .header-subtitle {
+    font-size: 1.34rem;
+  }
+
+  .header-events {
+    font-size: 0.96rem;
+  }
+
+  .story-panels {
+    position: absolute;
+    inset: 0;
+    display: block;
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .story-panel {
+    position: static;
+    display: contents;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .featured-panel {
+    transform: none;
+    display: contents;
+  }
+
+  .featured-panel .story-art {
+    position: absolute;
+    left: 50%;
+    top: 22.5%;
+    width: 19%;
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    box-shadow:
+      0 0 1rem rgba(244, 196, 48, 0.15),
+      0 0 2rem rgba(214, 40, 40, 0.08);
+    min-height: unset;
+    margin: unset;
+  }
+
+  .story-birth .story-art {
+    position: absolute;
+    left: 17.2%;
+    top: 31.5%;
+    width: 18.4%;
+    height: 24.5%;
+    min-height: unset;
+    margin: unset;
+    border-radius: 44% 44% 0.6rem 0.6rem / 28% 28% 0.6rem 0.6rem;
+  }
+
+  .story-parinibbana .story-art {
+    position: absolute;
+    right: 17.2%;
+    top: 31.5%;
+    width: 18.4%;
+    height: 24.5%;
+    min-height: unset;
+    margin: unset;
+    border-radius: 44% 44% 0.6rem 0.6rem / 28% 28% 0.6rem 0.6rem;
+  }
+
+  .enlightenment-light-set {
+    --enlightenment-light-size: clamp(8.5rem, 23%, 15.75rem);
+    position: absolute;
+    left: 50%;
+    right: auto;
+    top: 21.3%;
+    z-index: 1;
+    display: block;
+    width: var(--enlightenment-light-size);
+    height: var(--enlightenment-light-size);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.96;
+    mix-blend-mode: screen;
+  }
+
+  .panel-copy {
+    position: absolute;
+    display: block;
+    padding: unset;
+    border: unset;
+    border-top: unset;
+  }
+
+  .panel-copy h3 {
+    font-size: unset;
+  }
+
+  .panel-copy p:last-child {
+    font-size: unset;
+  }
+
+  .sinhala-title {
+    font-size: unset;
+  }
+
+  .thorana-decor {
+    position: absolute;
+    left: 50%;
+    top: calc(clamp(0.6rem, 1.6vw, 1.6rem) - 3cm);
+    height: clamp(36rem, 53vw, 47rem);
+    bottom: auto;
+    width: min(116%, 1440px);
+    transform: translateX(-50%);
+    z-index: 5;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .thorana-frame-image {
+    object-fit: contain;
+    object-position: center bottom;
+    opacity: 0.96;
+  }
+
+  .pandol-base {
+    position: absolute;
+    z-index: 6;
+  }
+
+  .pandol-foreground-image {
+    width: 100%;
+    opacity: 1;
+  }
+
+  .pandol-pillar {
+    display: none;
+    opacity: 0.48;
+  }
+
+  .themagula-banner-frame {
+    position: absolute;
+    left: 50%;
+    top: calc(64% + 1.2cm);
+    z-index: 9;
+    width: 100%;
+    aspect-ratio: 13.5 / 2;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 0.9rem rgba(244, 196, 48, 0.28));
+    pointer-events: none;
+    margin: unset;
   }
 
   .reflection-card h2 {
     font-size: 2.25rem;
   }
 
-  .story-panels {
-    position: relative;
-    inset: auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    height: auto;
-    gap: 1rem;
-    padding: 0;
-  }
-
-  .story-panel,
-  .featured-panel {
-    position: relative;
-    display: grid;
-    grid-template-rows: auto auto;
-    min-height: auto;
-    transform: none;
-    border: 1px solid rgba(244, 196, 48, 0.38);
-    border-radius: 0.8rem;
-    background: linear-gradient(180deg, rgba(7, 15, 37, 0.68), rgba(3, 8, 21, 0.92));
-    overflow: hidden;
-  }
-
-  .story-panel.has-image:hover,
-  .featured-panel.has-image:hover {
-    transform: none;
-  }
-
-  .story-art {
-    position: relative;
-    left: auto;
-    right: auto;
-    top: auto;
-    width: auto;
-    height: auto;
-    min-height: clamp(14rem, 48vw, 24rem);
-    margin: 0.55rem 0.55rem 0;
-    border-radius: 0.65rem;
-  }
-
-  .featured-panel .story-art {
-    left: auto;
-    top: auto;
-    width: auto;
-    min-height: 0;
-    aspect-ratio: 1.1;
-    transform: none;
-    border-radius: 0.65rem;
-  }
-
-  .enlightenment-light-set {
-    --enlightenment-light-size: clamp(11rem, 56%, 18rem);
-    left: 50%;
-    right: auto;
-    top: clamp(1.2rem, 4vw, 1.8rem);
-    width: var(--enlightenment-light-size);
-    height: var(--enlightenment-light-size);
-    transform: translateX(-50%);
-    border-radius: 50%;
-  }
-
-  .enlightenment-light-layer {
-    border-radius: inherit;
-  }
-
-  .themagula-banner-frame {
-    position: relative;
-    left: auto;
-    top: auto;
-    width: min(100%, 720px);
-    margin: 0.2rem auto 0;
-    transform: none;
-  }
-
-  .panel-copy,
-  .story-enlightenment .panel-copy,
-  .story-birth .panel-copy,
-  .story-parinibbana .panel-copy {
-    position: relative;
-    top: auto;
-    left: auto;
-    right: auto;
-    width: auto;
-    min-height: 0;
-    transform: none;
-    border: 0;
-    border-top: 1px solid rgba(244, 196, 48, 0.22);
-  }
-
-  .thorana-decor {
-    left: 50%;
-    top: -4.8rem;
-    bottom: auto;
-    width: 112%;
-    height: 16rem;
-    transform: translateX(-50%);
-  }
-
-  .thorana-frame-image {
-    object-fit: contain;
-    object-position: center top;
-    opacity: 0.42;
-  }
-
-  .pandol-base {
-    position: relative;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    z-index: 1;
-    height: clamp(7rem, 18vw, 9.5rem);
-    margin: clamp(-3.6rem, -7vw, -2rem) -1.8rem -1.2rem;
-  }
-
-  .pandol-foreground-image {
-    width: 98%;
-  }
-
-  .featured-panel {
-    order: -1;
-  }
-}
-
-@media (max-width: 640px) {
-  .vesak-sky {
-    padding-inline: 0.8rem;
-  }
-
-  .intro-kicker,
-  .header-label,
-  .reflection-kicker {
-    font-size: 0.78rem;
-  }
-
-  .page-intro h1 {
-    font-size: 2.55rem;
-  }
-
-  .page-intro {
-    margin-bottom: 0.65rem;
-  }
-
-  .pandol {
-    margin-top: 3.2rem;
-    padding: 3.65rem 0.95rem 0.95rem;
-    border-radius: 1rem 1rem 0.55rem 0.55rem;
-  }
-
-  .pandol::before {
-    inset: 0.48rem;
-  }
-
-  .thorana-decor {
-    top: -3.5rem;
-    width: 122%;
-    height: 10.5rem;
-  }
-
-  .thorana-frame-image {
-    opacity: 0.32;
-  }
-
-  .pandol-foreground-image {
-    width: 106%;
-    opacity: 0.42;
-  }
-
-  .pandol-pillar {
-    opacity: 0.24;
-    width: 0.42rem;
-  }
-
-  .pandol-header {
-    border-radius: 1.4rem 1.4rem 0.9rem 0.9rem;
-  }
-
-  .pandol-header h2 {
-    font-size: 2.3rem;
-  }
-
-  .header-subtitle {
-    font-size: 1.05rem;
-  }
-
-  .header-events {
-    font-size: 0.88rem;
-  }
-
-  .panel-copy h3 {
-    font-size: 1.28rem;
-  }
-
-  .sinhala-title {
-    font-size: 1.02rem;
-  }
-
-  .panel-copy p:last-child {
-    font-size: 0.92rem;
-  }
-
-  .panel-copy {
-    padding: 1rem 0.95rem 1.1rem;
-  }
-
-  .reflection-card h2 {
-    font-size: 1.85rem;
-  }
-
   .reflection-card p {
-    font-size: 1rem;
+    font-size: unset;
   }
 
   .reflection-card .sinhala-blessing {
-    font-size: 1.08rem;
+    font-size: unset;
   }
 
   .controls {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     border-radius: 0.8rem;
   }
 
   .control-button {
-    width: 100%;
+    width: auto;
   }
 
   .moon {
-    opacity: 0.72;
-    right: 1rem;
+    opacity: 1;
+    right: unset;
   }
 
   .lantern:nth-child(n + 9),
